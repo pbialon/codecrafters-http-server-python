@@ -1,8 +1,7 @@
-# Uncomment this to pass the first stage
 import socket
 
+from app.handlers.router import prepare_response
 from app.request import parse_request
-from app.response import create_response
 
 
 
@@ -13,7 +12,7 @@ def main():
     data = sock.recv(1024)
     request = parse_request(data.decode())
     
-    response = create_response(request)
+    response = prepare_response(request)
     sock.sendall(response.encode())
 
 
