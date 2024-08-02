@@ -18,7 +18,7 @@ def main():
     data = sock.recv(1024)
     request = parse_request(data.decode())
     
-    response = create_response()
+    response = create_response(request)
     sock.sendall(response.encode())
 
 
