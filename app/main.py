@@ -1,6 +1,6 @@
 import socket
 
-from app.handlers.get import *
+from app.handlers import *
 from app.server import app
 
 def main():

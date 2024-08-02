@@ -10,6 +10,7 @@ class Server:
         self._not_found_handler = NotFound404Handler()
 
     def route(self, method: str, path: str) -> callable:
+        path = self._sanitize_path(path)
         def decorator(handler):
             self._register_handler(method, path, handler)
             return handler
@@ -19,11 +20,16 @@ class Server:
     def serve(self, raw_request: str) -> str:
         request = self._parse_request(raw_request)
         method = request.request_line.method
-        path = request.request_line.path
+        path = self._sanitize_path(request.request_line.path)
 
         handler = self._handler(method, path)
         response = handler.handle(request)
         return self._to_raw_response(response)
+    
+    def _sanitize_path(self, path: str) -> str:
+        if not path.startswith("/"):
+            raise ValueError("Path must start with /")
+        return path if path.endswith("/") else f"{path}/"
 
     def _parse_request(self, raw_request: str) -> Request:
         parts = raw_request.split(CRLF)
