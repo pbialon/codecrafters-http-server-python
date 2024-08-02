@@ -1,9 +1,10 @@
-from app.request import CRLF, Request
-from app.response import HTTP_VERSION, REASON_PHRASE
 
+from logging import Handler
+from app.consts import Request, Response, ResponseCode
+from app.server import app
 
-def get(request: Request) -> str:
-    if request.request_line.path == "/":
-        return f"{HTTP_VERSION} 200 {REASON_PHRASE[200]}{CRLF}{CRLF}"
-
-    return f"{HTTP_VERSION} 404 {REASON_PHRASE[404]}{CRLF}{CRLF}"
+@app.route("GET", "/")
+class GetHandler(Handler):
+    @classmethod
+    def handle(cls, request: Request) -> Response:
+        return Response(ResponseCode.OK, "")
