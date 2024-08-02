@@ -5,10 +5,10 @@ from enum import Enum
 CRLF = "\r\n"
 HTTP_VERSION = "HTTP/1.1"
 
-RequestLine = namedtuple("RequestLine", "method path protocol")
+RequestMetadata = namedtuple("RequestMetadata", "method path protocol")
 Header = namedtuple("Header", "name value")
 
-Request = namedtuple("Request", "request_line headers body")
+Request = namedtuple("Request", "request_metadata headers body")
 
 
 class ResponseCode(Enum):

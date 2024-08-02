@@ -1,7 +1,7 @@
 import inspect
 from collections import namedtuple
 from app.base_handler import BaseHandler
-from app.consts import Header, Request, RequestLine
+from app.consts import Header, Request, RequestMetadata
 from app.consts import CRLF, REASON_PHRASE, Response, ResponseCode
 
 
@@ -12,8 +12,8 @@ class Server:
 
     def serve(self, raw_request: str) -> str:
         request = self._parse_request(raw_request)
-        method = request.request_line.method
-        path = self._sanitize_path(request.request_line.path)
+        method = request.request_metadata.method
+        path = self._sanitize_path(request.request_metadata.path)
 
         handle = self._handler(method, path)
         response = handle(request)
@@ -29,12 +29,12 @@ class Server:
 
     def _parse_request(self, raw_request: str) -> Request:
         parts = raw_request.split(CRLF)
-        request_line_raw = parts[0]
+        request_metadata_raw = parts[0]
         body_raw = parts[-1]
         headers_raw = parts[1:-1]
-        method, path, protocol = request_line_raw.split()
+        method, path, protocol = request_metadata_raw.split()
 
-        req = RequestLine(method, path, protocol)
+        req = RequestMetadata(method, path, protocol)
         headers = [Header(*header_raw.split(": ")) for header_raw in headers_raw[:-1]]
 
         return Request(req, headers, body_raw)
