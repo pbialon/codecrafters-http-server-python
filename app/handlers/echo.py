@@ -1,9 +1,10 @@
 from app.base_handler import BaseHandler
 from app.consts import Request, Response, ResponseCode
-from app.server import app
+from app.server import route
 
 
-@app.route("GET", "/echo")
+@route("/echo")
 class EchoHandler(BaseHandler):
-    def handle(self, request: Request) -> Response:
+    @classmethod
+    def get(cls, request: Request) -> Response:
         return Response(ResponseCode.OK, request.body)

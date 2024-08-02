@@ -1,10 +1,10 @@
 
 from logging import Handler
 from app.consts import Request, Response, ResponseCode
-from app.server import app
+from app.server import route
 
-@app.route("GET", "/")
+@route("/")
 class GetHandler(Handler):
     @classmethod
-    def handle(cls, request: Request) -> Response:
+    def get(cls, request: Request) -> Response:
         return Response(ResponseCode.OK, "")

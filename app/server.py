@@ -1,3 +1,4 @@
+import inspect
 from collections import namedtuple
 from app.base_handler import BaseHandler
 from app.consts import Header, Request, RequestLine
@@ -9,23 +10,18 @@ class Server:
         self._handlers = {}
         self._not_found_handler = NotFound404Handler()
 
-    def route(self, method: str, path: str) -> callable:
-        path = self._sanitize_path(path)
-        def decorator(handler):
-            self._register_handler(method, path, handler)
-            return handler
-
-        return decorator
-
     def serve(self, raw_request: str) -> str:
         request = self._parse_request(raw_request)
         method = request.request_line.method
         path = self._sanitize_path(request.request_line.path)
 
-        handler = self._handler(method, path)
-        response = handler.handle(request)
+        handle = self._handler(method, path)
+        response = handle(request)
         return self._to_raw_response(response)
-    
+
+    def register_handler(self, method: str, path: str, handler: BaseHandler) -> None:
+        self._handlers[(method, path)] = handler
+
     def _sanitize_path(self, path: str) -> str:
         if not path.startswith("/"):
             raise ValueError("Path must start with /")
@@ -43,14 +39,11 @@ class Server:
 
         return Request(req, headers, body_raw)
 
-    def _register_handler(self, method: str, path: str, handler: BaseHandler) -> None:
-        self._handlers[(method, path)] = handler
-
     def _handler(self, method: str, path: str) -> BaseHandler:
         return self._handlers.get((method, path), self._not_found_handler)
 
     def _to_raw_response(self, response: Response) -> str:
-        code = response.code.value # enum
+        code = response.code.value  # enum
         return f"HTTP/1.1 {code} {REASON_PHRASE[code]}{CRLF}{response.body}{CRLF}"
 
 
@@ -58,4 +51,18 @@ class NotFound404Handler(BaseHandler):
     def handle(self, request: Request) -> Response:
         return Response(ResponseCode.NOT_FOUND, "")
 
+
 app = Server()
+
+
+def route(path: str):
+    http_methods = ["GET", "POST", "PUT", "DELETE"]
+
+    def decorator(cls: BaseHandler):
+        for name, func in inspect.getmembers(cls, predicate=inspect.ismethod):
+            method = name.upper()
+            if method in http_methods:
+                app.register_handler(method, path, func)
+        return cls
+
+    return decorator
