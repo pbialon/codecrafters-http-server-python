@@ -1,0 +1,9 @@
+
+CRLF = '\r\n'
+
+HTTP_VERSION = 'HTTP/1.1'
+STATUS_CODE = 200
+REASON_PHRASE = 'OK'
+
+def create_response():
+    return f'{HTTP_VERSION} {STATUS_CODE} {REASON_PHRASE}{CRLF}{CRLF}'
