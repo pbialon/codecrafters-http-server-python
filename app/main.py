@@ -20,8 +20,9 @@ def handle_client(client_socket, client_address):
         client_socket.close()
         print(f"Connection with {client_address} closed.")
 
-
-def main():
+@click.command()
+@click.option("--directory", help="Directory to serve files from.")
+def main(directory):
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     stop_event = threading.Event()
     max_workers = 5
