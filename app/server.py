@@ -12,9 +12,6 @@ class Server:
 
         response = self._handle_request(request)
         return self._to_raw_response(response)
-    
-    def set_directory(self, directory: str) -> None:
-        self._directory
 
     def register_handler(self, method: str, path: HttpPath, handler) -> None:
         self._handlers[(method, path)] = handler
