@@ -41,7 +41,7 @@ class Server:
     def _to_raw_response(self, response: Response) -> str:
         code = response.code.value  # enum
         status_line = f"HTTP/1.1 {code} {REASON_PHRASE[code]}"
-        headers = CRLF.join([f"{header.name}: {header.value}" for header in response.headers])
+        headers = "".join([f"{header.name}: {header.value}{CRLF}" for header in response.headers])
         return (
             f"{status_line}"
             f"{CRLF}"
