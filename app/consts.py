@@ -5,7 +5,7 @@ from enum import Enum
 CRLF = "\r\n"
 HTTP_VERSION = "HTTP/1.1"
 
-RequestMetadata = namedtuple("RequestMetadata", "method path protocol")
+RequestMetadata = namedtuple("RequestMetadata", "method path protocol encoding")
 Header = namedtuple("Header", "name value")
 
 Request = namedtuple("Request", "metadata headers body")
