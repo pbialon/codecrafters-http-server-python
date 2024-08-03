@@ -2,17 +2,16 @@ import inspect
 from app.consts import Header, Request, RequestMetadata
 from app.consts import CRLF, REASON_PHRASE, Response, ResponseCode
 from app.encoders.gzip import GzipEncoder
+from app.encoders.utf8 import Utf8Encoder
 from app.http_path import HttpPath
 
 
 class Server:
-    SUPPORTED_ENCODINGS = {"gzip": GzipEncoder()}
-
     def __init__(self):
         self._handlers = {}
 
-    def process(self, raw_request: str) -> str:
-        request = self._parse_request(raw_request)
+    def process(self, raw_request: bytes) -> str:
+        request = self._parse_request(raw_request.decode())
 
         response = self._handle_request(request)
         return self._to_raw_response(response, request.metadata.encoding)
@@ -29,30 +28,10 @@ class Server:
 
         headers = [Header(*header_raw.split(": ")) for header_raw in headers_raw[:-1]]
 
-        encoding = self._get_encoding(headers)
+        encoding = Encodings.get(headers)
         metadata = RequestMetadata(method, path, protocol, encoding)
 
         return Request(metadata, headers, body_raw)
-
-    def _get_encoding(self, headers: list[Header]) -> str | None:
-        header = self._find_header(headers, "Accept-Encoding")
-        if not header:
-            return None
-
-        accepted_encodings = header.value.split(", ")
-        return self._find_supported_encoding(accepted_encodings)
-
-    def _find_supported_encoding(self, client_encodings: str) -> str | None:
-        for encoding in client_encodings:
-            if encoding in self.SUPPORTED_ENCODINGS:
-                return encoding
-        return None
-
-    def _find_header(self, headers: list[Header], name: str) -> Header | None:
-        for header in headers:
-            if header.name == name:
-                return header
-        return None
 
     def _handle_request(self, request: Request):
         method = request.metadata.method
@@ -73,22 +52,57 @@ class Server:
 
         if encoding:
             headers += f"Content-Encoding: {encoding}{CRLF}"
-            body = self.SUPPORTED_ENCODINGS[encoding](body)
         
+        body = Encodings.encode(body, encoding)
         if body:
             headers += f"Content-Length: {len(body)}{CRLF}"
-
-        return (
+            
+        response_without_body = (
             f"{status_line}"
             f"{CRLF}"
             f"{headers}"
             f"{CRLF}"
-            f"{body}"
-        )
+        ).encode()
+        
+        return response_without_body + body
 
     @staticmethod
     def _not_found(request: Request) -> Response:
         return Response(ResponseCode.NOT_FOUND)
+    
+    
+class Encodings:
+    SUPPORTED_ENCODINGS = {"gzip": GzipEncoder()}
+    DEFAULT_ENCODER = Utf8Encoder()
+    ACCEPT_ENCODING_HEADER = "Accept-Encoding"
+
+    @classmethod
+    def get(cls, headers: list[Header]) -> str | None:
+        header = cls._find_header(headers, cls.ACCEPT_ENCODING_HEADER)
+        if not header:
+            return None
+
+        accepted_encodings = header.value.split(", ")
+        return cls._find_supported_encoding(accepted_encodings)
+    
+    @classmethod
+    def encode(cls, body: str, encoding: str) -> str:
+        encoder = cls.SUPPORTED_ENCODINGS.get(encoding, cls.DEFAULT_ENCODER)
+        return encoder(body)
+
+    @classmethod
+    def _find_supported_encoding(cls, client_encodings: str) -> str | None:
+        for encoding in client_encodings:
+            if encoding in cls.SUPPORTED_ENCODINGS:
+                return encoding
+        return None
+
+    @classmethod
+    def _find_header(cls, headers: list[Header], name: str) -> Header | None:
+        for header in headers:
+            if header.name == name:
+                return header
+        return None
 
 app = Server()
 

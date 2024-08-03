@@ -1,5 +1,6 @@
 import socket
 import threading
+from typing import Any
 import click
 from concurrent.futures import ThreadPoolExecutor
 
@@ -13,8 +14,8 @@ def handle_client(client_socket, client_address):
             request_raw = client_socket.recv(1024)
             if not request_raw:
                 break
-            response = app.process(request_raw.decode())
-            client_socket.sendall(response.encode())
+            response = app.process(request_raw)
+            client_socket.sendall(response)
     finally:
         client_socket.close()
 
