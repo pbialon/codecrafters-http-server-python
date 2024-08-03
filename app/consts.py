@@ -8,7 +8,7 @@ HTTP_VERSION = "HTTP/1.1"
 RequestMetadata = namedtuple("RequestMetadata", "method path protocol")
 Header = namedtuple("Header", "name value")
 
-Request = namedtuple("Request", "request_metadata headers body")
+Request = namedtuple("Request", "metadata headers body")
 
 
 class ResponseCode(Enum):

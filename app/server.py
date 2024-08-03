@@ -11,11 +11,8 @@ class Server:
 
     def serve(self, raw_request: str) -> str:
         request = self._parse_request(raw_request)
-        method = request.request_metadata.method
-        path = request.request_metadata.path
 
-        handle = self._handle(method, path)
-        response = handle(request)
+        response = self._handle_request(request)
         return self._to_raw_response(response)
 
     def register_handler(self, method: str, path: HttpPath, handler) -> None:
@@ -33,11 +30,15 @@ class Server:
 
         return Request(metadata, headers, body_raw)
 
-    def _handle(self, method: str, path: str):
+    def _handle_request(self, request: Request):
+        method = request.metadata.method
+        path = request.metadata.path
         for (handler_method, handler_path), handler in self._handlers.items():
             if method == handler_method and handler_path.match(path):
-                return handler
-        return self._not_found
+                # todo: take care of dynamic arguments
+                dynamic_kwargs = handler_path.parse(path)
+                return handler(request, **dynamic_kwargs)
+        return self._not_found(request)
 
     def _to_raw_response(self, response: Response) -> str:
         code = response.code.value  # enum

@@ -9,8 +9,17 @@ class HttpPath:
         self._raw_path_pattern = self._sanitize_path_pattern(raw_path_pattern)
 
     def match(self, raw_path: str):
+        import ipdb; ipdb.set_trace()
         sanitized_raw_path = self._ensure_trailing_slash(raw_path)
         return re.match(self._regex_pattern(), sanitized_raw_path)
+    
+    def parse(self, raw_path: str):
+        match = self.match(raw_path)
+        return {
+            arg: value
+            for arg, value in zip(self._dynamic_arguments(), match.groups())
+        }
+        
 
     def _dynamic_arguments(self):
         return [
@@ -22,7 +31,7 @@ class HttpPath:
     def _regex_pattern(self):
         pattern = self._raw_path_pattern
         for arg in self._dynamic_arguments():
-            pattern = pattern.replace(f":{arg}", "w+")
+            pattern = pattern.replace(f":{arg}", "(.+)")
         # add start and end of string anchors
         return f"^{pattern}$"
 
