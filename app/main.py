@@ -1,5 +1,6 @@
 import socket
 import threading
+import click
 from concurrent.futures import ThreadPoolExecutor
 
 from app.handlers import *
