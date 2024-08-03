@@ -33,7 +33,7 @@ def main():
 
                 executor.submit(handle_client, client_socket, client_address)
         except KeyboardInterrupt:
-            print("Server is shutting down.")
+            print("\nServer is shutting down.\n")
         finally:
             stop_event.set()
             server_socket.close()
