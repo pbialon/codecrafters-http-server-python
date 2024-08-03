@@ -11,7 +11,6 @@ class UserAgentHandler:
         user_agent = cls._get_user_agent(request)
         headers = [
             Header("Content-Type", "text/plain"),
-            Header("Content-Length", str(len(user_agent))),
         ]
         return Response(ResponseCode.OK, headers, user_agent)
     

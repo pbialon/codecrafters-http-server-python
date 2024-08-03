@@ -33,3 +33,9 @@ class Response:
         self.headers = headers
         self.body = body
 
+    def __str__(self):
+        return (
+            f"{self.code.value} {REASON_PHRASE[self.code.value]}\n"
+            f"{self.headers}\n"
+            f"{self.body}"
+        )

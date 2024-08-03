@@ -9,6 +9,5 @@ class EchoHandler:
     def get(cls, request: Request, message: str) -> Response:
         headers = [
             Header("Content-Type", "text/plain"),
-            Header("Content-Length", str(len(message))),
         ]
         return Response(ResponseCode.OK, headers, message)

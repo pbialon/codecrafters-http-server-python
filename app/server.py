@@ -15,7 +15,7 @@ class Server:
         request = self._parse_request(raw_request)
 
         response = self._handle_request(request)
-        return self._to_raw_response(response, request.encoding)
+        return self._to_raw_response(response, request.metadata.encoding)
 
     def register_handler(self, method: str, path: HttpPath, handler) -> None:
         self._handlers[(method, path)] = handler
@@ -74,6 +74,9 @@ class Server:
         if encoding:
             headers += f"Content-Encoding: {encoding}{CRLF}"
             body = self.SUPPORTED_ENCODINGS[encoding](body)
+        
+        if body:
+            headers += f"Content-Length: {len(body)}{CRLF}"
 
         return (
             f"{status_line}"

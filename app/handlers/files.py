@@ -22,7 +22,6 @@ class FilesHandler:
 
         headers = [
             Header("Content-Type", "application/octet-stream"),
-            Header("Content-Length", str(len(content))),
         ]
 
         return Response(ResponseCode.OK, headers, content)
