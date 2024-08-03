@@ -51,7 +51,7 @@ class Server:
 
     @staticmethod
     def _not_found(request: Request) -> Response:
-        return Response(ResponseCode.NOT_FOUND, [], "")
+        return Response(ResponseCode.NOT_FOUND)
 
 
 app = Server()

@@ -6,4 +6,4 @@ from app.server import route
 class GetHandler:
     @classmethod
     def get(cls, request: Request) -> Response:
-        return Response(ResponseCode.OK, [], "")
+        return Response(ResponseCode.OK)

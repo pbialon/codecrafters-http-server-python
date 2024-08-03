@@ -33,4 +33,4 @@ class FilesHandler:
         with open(filepath, "w") as f:
             f.write(request.body)
 
-        return Response(ResponseCode.CREATED, [], "")
+        return Response(ResponseCode.CREATED)
