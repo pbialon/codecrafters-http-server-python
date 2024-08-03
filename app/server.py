@@ -48,7 +48,6 @@ class Server:
             f"{headers}"
             f"{CRLF}"
             f"{response.body}"
-            f"{CRLF}"
         )
 
     @staticmethod
