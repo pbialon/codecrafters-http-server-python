@@ -8,7 +8,7 @@ from app.server import app
 
 
 def handle_client(client_socket, client_address):
-    print(f'Accepted connection from {client_address}')
+    print(f"Accepted connection from {client_address}")
     try:
         while True:
             request_raw = client_socket.recv(1024)
@@ -20,10 +20,14 @@ def handle_client(client_socket, client_address):
         client_socket.close()
         print(f"Connection with {client_address} closed.")
 
+
 @click.command()
 @click.option("--directory", help="Directory to serve files from.")
 def main(directory):
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
+    if directory:
+        FilesHandler.set_directory(directory)
+
     stop_event = threading.Event()
     max_workers = 5
 
