@@ -8,7 +8,6 @@ from app.server import app
 
 
 def handle_client(client_socket, client_address):
-    print(f"Accepted connection from {client_address}")
     try:
         while True:
             request_raw = client_socket.recv(1024)
@@ -18,7 +17,6 @@ def handle_client(client_socket, client_address):
             client_socket.sendall(response.encode())
     finally:
         client_socket.close()
-        print(f"Connection with {client_address} closed.")
 
 
 @click.command()
@@ -35,7 +33,6 @@ def main(directory):
         try:
             while not stop_event.is_set():
                 client_socket, client_address = server_socket.accept()
-                print(f"Connection from: {client_address}")
 
                 executor.submit(handle_client, client_socket, client_address)
         except KeyboardInterrupt:
