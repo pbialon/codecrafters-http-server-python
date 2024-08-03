@@ -26,3 +26,11 @@ class FilesHandler:
         ]
 
         return Response(ResponseCode.OK, headers, content)
+
+    @classmethod
+    def post(cls, request: Request, filename: str) -> Response:
+        filepath = join(cls._directory, filename)
+        with open(filepath, "w") as f:
+            f.write(request.body)
+
+        return Response(ResponseCode.CREATED, [], "")
