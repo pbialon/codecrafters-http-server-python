@@ -7,4 +7,4 @@ from app.server import route
 class EchoHandler:
     @classmethod
     def get(cls, request: Request, message: str) -> Response:
-        return Response(ResponseCode.OK, message)
+        return Response(ResponseCode.OK, [], message)

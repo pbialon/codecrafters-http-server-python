@@ -1,6 +1,4 @@
-from functools import wraps
 import inspect
-from collections import defaultdict, namedtuple
 from app.consts import Header, Request, RequestMetadata
 from app.consts import CRLF, REASON_PHRASE, Response, ResponseCode
 from app.http_path import HttpPath
@@ -42,7 +40,16 @@ class Server:
 
     def _to_raw_response(self, response: Response) -> str:
         code = response.code.value  # enum
-        return f"HTTP/1.1 {code} {REASON_PHRASE[code]}{CRLF}{response.body}{CRLF}"
+        status_line = f"HTTP/1.1 {code} {REASON_PHRASE[code]}"
+        headers = CRLF.join([f"{header.name}: {header.value}" for header in response.headers])
+        return (
+            f"{status_line}"
+            f"{CRLF}"
+            f"{headers}"
+            f"{CRLF}"
+            f"{response.body}"
+            f"{CRLF}"
+        )
 
     @staticmethod
     def _not_found(request: Request) -> Response:

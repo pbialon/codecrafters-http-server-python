@@ -25,4 +25,4 @@ REASON_PHRASE = {
     500: "Internal Server Error",
 }
 
-Response = namedtuple("Response", "code body")
+Response = namedtuple("Response", "code headers body")
