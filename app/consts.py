@@ -27,5 +27,9 @@ REASON_PHRASE = {
     500: "Internal Server Error",
 }
 
-Response = namedtuple("Response", "code headers body")
+class Response:
+    def __init__(self, code: ResponseCode, headers: list[Header] = [], body: str = ""):
+        self.code = code
+        self.headers = headers
+        self.body = body
 

@@ -7,7 +7,7 @@ class Server:
     def __init__(self):
         self._handlers = {}
 
-    def serve(self, raw_request: str) -> str:
+    def process(self, raw_request: str) -> str:
         request = self._parse_request(raw_request)
 
         response = self._handle_request(request)
@@ -33,7 +33,6 @@ class Server:
         path = request.metadata.path
         for (handler_method, handler_path), handler in self._handlers.items():
             if method == handler_method and handler_path.match(path):
-                # todo: take care of dynamic arguments
                 dynamic_kwargs = handler_path.parse(path)
                 return handler(request, **dynamic_kwargs)
         return self._not_found(request)
